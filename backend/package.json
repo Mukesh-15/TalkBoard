@@ -4,12 +4,16 @@
   "description": "this is a backend folder for the talkboard app",
   "main": "index.js",
   "scripts": {
-    "start" : "node index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "mukesh",
   "license": "ISC",
   "dependencies": {
-    "express.js": "^1.0.0"
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "express.js": "^1.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.7.0"
   }
 }
