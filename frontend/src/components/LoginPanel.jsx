@@ -5,11 +5,11 @@ import IconField from './IconField';
 export default function LoginPanel() {
 
   const {login} = useContext(AuthContext);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = (e) => {
-    login(email, password);
+    login(username, password);
   }
 
   return (
@@ -17,7 +17,7 @@ export default function LoginPanel() {
       <h2 className="text-2xl font-bold text-gray-900 text-center mb-1">Sign in to TalkBoard</h2>
       <p className="text-sm text-gray-400 text-center mb-7">Welcome back! Please enter your details.</p>
 
-      <IconField type="email"    ionicon="mail-outline"        placeholder="Email"    id="l-email"  value={email} setValue={setEmail}/>
+      <IconField type="text"    ionicon="person-outline"        placeholder="Username"    id="l-email"  value={username} setValue={setUsername}/>
       <IconField type="password" ionicon="lock-closed-outline" placeholder="Password" id="l-pw" value={password} setValue={setPassword} />
 
       <div className="flex justify-between items-center mb-5">

@@ -2,10 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const auth = require('./routes/auth');
+const cors = require('cors');
 const connectToMongo = require('./db/db');
 
 connectToMongo();
 app.use(express.json());
+app.use(cors());
 
 app.use('/auth', auth);
 
