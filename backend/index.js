@@ -5,8 +5,10 @@ const auth = require('./routes/auth');
 const connectToMongo = require('./db/db');
 
 connectToMongo();
+app.use(express.json());
 
 app.use('/auth', auth);
+
 
 app.get('/', (req, res) => {
     console.log("working..");
