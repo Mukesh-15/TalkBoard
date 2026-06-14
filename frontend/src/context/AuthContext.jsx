@@ -25,10 +25,9 @@ export const AuthProvider = ({ children }) => {
 
       if (json.success) {
         localStorage.setItem("token", json.tempToken);
-      } 
+      }
 
       return json;
-
     } catch (err) {
       console.error("Login error:", err);
       // toast.error("Something went wrong. Please try again.");
@@ -53,8 +52,14 @@ export const AuthProvider = ({ children }) => {
       console.log(json);
 
       if (json.success) {
-        localStorage.setItem("token", json.tempToken);
-      } 
+        if (json.tempToken) {
+          localStorage.setItem("token", json.tempToken);
+        }
+
+        if (json.authToken) {
+          localStorage.setItem("token", json.authToken);
+        }
+      }
 
       return json;
     } catch (err) {
@@ -113,8 +118,40 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const validateUser = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        return false;
+      }
+
+      const response = await fetch(`${API_URL}/auth/me`, {
+        method: "GET",
+        headers: {
+          authToken: token,
+        },
+      });
+
+      const json = await response.json();
+
+      if (json.success) {
+        return json.user;
+      }
+
+      localStorage.removeItem("token");
+
+      return false;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ signup, login, verifyOtp, logout }}>
+    <AuthContext.Provider
+      value={{ signup, login, verifyOtp, logout, validateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

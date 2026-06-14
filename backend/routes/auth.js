@@ -87,6 +87,50 @@ router.post("/verify-otp", tempVerifyToken, async (req, res) => {
   }
 });
 
+router.get("/me", verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await User.findById(userId).select(
+      "-password"
+    );
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (!user.isVerified) {
+      return res.status(401).json({
+        success: false,
+        message: "Verify OTP first",
+      });
+    }
+
+    if (!user.isLoggedIn) {
+      return res.status(401).json({
+        success: false,
+        message: "Please login again",
+      });
+    }
+
+    return res.json({
+      success: true,
+      user,
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
 router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
