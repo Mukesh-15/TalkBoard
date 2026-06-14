@@ -109,8 +109,6 @@ export default function Home  () {
   const [toast, setToast] = useState("");
   const navigate = useNavigate();
 
-  
-
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2400);
