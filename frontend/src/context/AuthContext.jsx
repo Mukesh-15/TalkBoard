@@ -1,9 +1,13 @@
 import { createContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const API_URL = "http://localhost:5000";
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const signup = async (username, email, password, confirmPassword) => {
     try {
@@ -110,6 +114,7 @@ export const AuthProvider = ({ children }) => {
 
       if (json.success) {
         localStorage.removeItem("token");
+        navigate("/auth");
       }
 
       return json;
@@ -118,39 +123,75 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const validateUser = async () => {
-    try {
-      const token = localStorage.getItem("token");
+  // const validateUser = async () => {
+  //   try {
+  //     const token = localStorage.getItem("token");
 
-      if (!token) {
-        return false;
-      }
+  //     if (!token) {
+  //       return false;
+  //     }
 
-      const response = await fetch(`${API_URL}/auth/me`, {
-        method: "GET",
+  //     const response = await fetch(`${API_URL}/auth/me`, {
+  //       method: "GET",
+  //       headers: {
+  //         authToken: token,
+  //       },
+  //     });
+
+  //     const json = await response.json();
+
+  //     if (json.success) {
+  //       return json.user;
+  //     }
+
+  //     localStorage.removeItem("token");
+
+  //     return false;
+  //   } catch (error) {
+  //     console.log(error);
+  //     return false;
+  //   }
+  // };
+
+  const fetchUser = async () => {
+  try {
+    const token =
+      localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/auth");
+      return;
+    }
+
+    const response = await fetch(
+      `${API_URL}/auth/me`,
+      {
         headers: {
           authToken: token,
         },
-      });
-
-      const json = await response.json();
-
-      if (json.success) {
-        return json.user;
       }
+    );
 
+    const json =
+      await response.json();
+
+    if (json.success) {
+      setUser(json.user);
+    } else {
       localStorage.removeItem("token");
-
-      return false;
-    } catch (error) {
-      console.log(error);
-      return false;
+      navigate("/auth");
     }
-  };
+  } catch (error) {
+    console.log(error);
+    navigate("/auth");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <AuthContext.Provider
-      value={{ signup, login, verifyOtp, logout, validateUser }}
+      value={{ signup, login, verifyOtp, logout, fetchUser, user}}
     >
       {children}
     </AuthContext.Provider>

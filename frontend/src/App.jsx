@@ -5,27 +5,16 @@ import heroImg from "./assets/hero.png";
 import TalkBoardAuth from "./components/TalkBoardAuth";
 import Home from "./components/Home";
 import OtpVerification from "./components/Otpverification.jsx";
-import { AuthContext} from "./context/AuthContext.jsx";
+import { AuthContext } from "./context/AuthContext.jsx";
 import { Routes, Route } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 
 import "./App.css";
 
 function App() {
-  const { validateUser } = useContext(AuthContext);
-
-  const navigate = useNavigate();
+  const { fetchUser } = useContext(AuthContext);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const user = await validateUser();
-
-      if (!user) {
-        navigate("/auth");
-      }
-    };
-
-    checkAuth();
+    fetchUser();
   }, []);
 
   return (
