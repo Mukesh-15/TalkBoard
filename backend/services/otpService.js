@@ -24,12 +24,6 @@ const sendOtp = async (userId, email) => {
       Date.now() + 5 * 60 * 1000
     );
 
-    await Otps.create({
-      user: userId,
-      otp: hashedOtp,
-      validTill,
-    });
-
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -42,8 +36,18 @@ const sendOtp = async (userId, email) => {
 
     await transporter.sendMail(mailOptions);
 
+    await Otps.create({
+      user: userId,
+      otp: hashedOtp,
+      validTill,
+    });
+
     return true;
+    
   } catch (error) {
+    if(error.code = "EENVELOPE"){
+      console.log("not a valid mail id");
+    }
     console.log(error);
     return false;
   }
