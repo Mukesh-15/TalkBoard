@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
       if (json.success) {
         localStorage.setItem("token", json.tempToken);
       } 
-      
+
       return json;
 
     } catch (err) {
