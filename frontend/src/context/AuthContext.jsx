@@ -3,7 +3,7 @@ import { createContext, useState } from "react";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const API_URL = 'http://localhost:5000';
+  const API_URL = "http://localhost:5000";
 
   const signup = async (username, email, password, confirmPassword) => {
     try {
@@ -24,21 +24,11 @@ export const AuthProvider = ({ children }) => {
       console.log(json);
 
       if (json.success) {
-        localStorage.setItem("token", json.authToken);
+        localStorage.setItem("token", json.tempToken);
+      } 
+      
+      return json;
 
-        if (json.isVerified) {
-          // toast.success("Login Successful");
-          alert("login Successful");
-          // navigate("/");
-        } else {
-          // navigate("/VerifyOtp");
-          // toast.success("Login Successful but Not Verified");
-          alert("verify");
-        }
-      } else {
-        // toast.error(json.message);
-        alert("json.message");
-      }
     } catch (err) {
       console.error("Login error:", err);
       // toast.error("Something went wrong. Please try again.");
@@ -63,29 +53,68 @@ export const AuthProvider = ({ children }) => {
       console.log(json);
 
       if (json.success) {
-        localStorage.setItem("token", json.authToken);
+        localStorage.setItem("token", json.tempToken);
+      } 
 
-        if (json.isVerified) {
-          // toast.success("Login Successful");
-          alert("login Successful");
-          // navigate("/");
-        } else {
-          // navigate("/VerifyOtp");
-          // toast.success("Login Successful but Not Verified");
-          alert("verify");
-        }
-      } else {
-        // toast.error(json.message);
-        alert("json.message");
-      }
+      return json;
     } catch (err) {
       console.error("Login error:", err);
       // toast.error("Something went wrong. Please try again.");
     }
   };
 
+  const verifyOtp = async (otp) => {
+    try {
+      const response = await fetch(`${API_URL}/auth/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authToken: localStorage.getItem("token"),
+        },
+        body: JSON.stringify({
+          otp: otp,
+        }),
+      });
+
+      const json = await response.json();
+
+      console.log(json);
+
+      if (json.success) {
+        localStorage.setItem("token", json.authToken);
+      }
+
+      return json;
+    } catch (err) {
+      console.error("Login error:", err);
+      // toast.error("Something went wrong. Please try again.");
+    }
+  };
+
+  const logout = async () => {
+    try {
+      const response = await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authToken: localStorage.getItem("token"),
+        },
+      });
+
+      const json = await response.json();
+
+      if (json.success) {
+        localStorage.removeItem("token");
+      }
+
+      return json;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ signup, login }}>
+    <AuthContext.Provider value={{ signup, login, verifyOtp, logout }}>
       {children}
     </AuthContext.Provider>
   );

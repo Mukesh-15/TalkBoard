@@ -1,28 +1,51 @@
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET;
+const User = require("../models/User");
 
-const verifyToken = (req, res, next) => {
-  const token = req.header("authToken");
-
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      error: "Please authenticate using a valid token",
-    });
-  }
-
+const verifyToken = async (req, res, next) => {
   try {
-    const data = jwt.verify(
-      token,
-      JWT_SECRET
-    );
+    const token = req.header("authToken");
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Access denied",
+      });
+    }
+
+    const data = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findById(data.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (!user.isVerified) {
+      return res.status(403).json({
+        success: false,
+        message: "Please verify OTP",
+      });
+    }
+
+    if (!user.isLoggedIn) {
+      return res.status(401).json({
+        success: false,
+        message: "Please login again",
+      });
+    }
 
     req.user = data.user;
+
     next();
   } catch (error) {
+    console.log(error);
+
     return res.status(401).json({
       success: false,
-      error: "Please authenticate using a valid token",
+      message: "Invalid token",
     });
   }
 };

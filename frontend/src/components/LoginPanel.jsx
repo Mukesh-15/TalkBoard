@@ -1,15 +1,23 @@
 import { useState, useEffect, useContext} from "react";
 import {AuthContext} from '../context/AuthContext';
 import IconField from './IconField';
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPanel() {
 
   const {login} = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    login(username, password);
+  const handleLogin = async () => {
+    const response = await login(username, password);
+
+    if(response.success){
+      navigate("/verify-otp");
+    }else{
+      console.log(response);
+    }
   }
 
   return (

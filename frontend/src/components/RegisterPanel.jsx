@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext} from "react";
 import {AuthContext} from '../context/AuthContext';
 import IconField from './IconField';
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPanel() {
   const {signup} = useContext(AuthContext);
@@ -8,10 +9,17 @@ export default function RegisterPanel() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
 
 
-  const handleSignup= () =>{
-    signup(username, email, password, confirmPassword);
+  const handleSignup = async () =>{
+    const response = await signup(username, email, password, confirmPassword);
+
+    if(response.success){
+      navigate("/verify-otp");
+    }else{
+      console.log(response);
+    }
   }
 
   return (

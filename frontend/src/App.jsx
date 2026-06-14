@@ -3,6 +3,7 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "./assets/vite.svg";
 import heroImg from "./assets/hero.png";
 import TalkBoardAuth from "./components/TalkBoardAuth";
+import Home from "./components/Home";
 import OtpVerification from "./components/Otpverification.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { Routes, Route } from "react-router-dom";
@@ -16,6 +17,7 @@ function App() {
     <>
       <AuthProvider>
         <Routes>
+          <Route path= '/' element={<Home/>}/>
           <Route path= '/auth' element={<TalkBoardAuth/>}/>
           <Route path= '/verify-otp' element={<OtpVerification/>}/>
         </Routes>

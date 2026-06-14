@@ -1,11 +1,15 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
+import {AuthContext} from '../context/AuthContext';
+import { useNavigate } from "react-router-dom";
 
-export default function OtpVerification({ length = 6, onVerify }) {
+export default function OtpVerification({ length = 6 }) {
   const [values, setValues] = useState(Array(length).fill(""));
   const [verified, setVerified] = useState(false);
   const [toast, setToast] = useState("");
   const [resendTimer, setResendTimer] = useState(0);
   const inputs = useRef([]);
+  const {verifyOtp} = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     inputs.current[0]?.focus();
@@ -15,7 +19,7 @@ export default function OtpVerification({ length = 6, onVerify }) {
     if (!toast) return;
     const t = setTimeout(() => setToast(""), 2500);
     return () => clearTimeout(t);
-  }, [toast]);
+  }, [toast]); 
 
   useEffect(() => {
     if (resendTimer <= 0) return;
@@ -45,16 +49,26 @@ export default function OtpVerification({ length = 6, onVerify }) {
     inputs.current[Math.min(text.length, length - 1)]?.focus();
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const code = values.join("");
     if (code.length < length) {
       const empty = values.findIndex(v => !v);
       inputs.current[empty]?.focus();
-      setToast("Please enter all 4 digits");
+
+      setToast("Please enter all 6 digits");
       return;
     }
-    setVerified(true);
-    onVerify?.(code);
+
+    const response = await verifyOtp(code);
+
+    if(response.success){
+      setVerified(true);
+      navigate("/");
+    }else{
+      toast("Wrong OTP");
+    }
+    // onVerify?.(code);
+
     setTimeout(() => {
       setVerified(false);
       setValues(Array(length).fill(""));

@@ -9,8 +9,9 @@ const sendOtp = require("../services/otpService");
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const verifyToken = require("../middleware/verifyToken");
+const tempVerifyToken = require("../middleware/tempVerifyToken");
 
-router.post("/verify-otp", verifyToken, async (req, res) => {
+router.post("/verify-otp", tempVerifyToken, async (req, res) => {
   const { otp } = req.body;
   const userId = req.user.id;
 
@@ -53,8 +54,11 @@ router.post("/verify-otp", verifyToken, async (req, res) => {
 
     await User.findByIdAndUpdate(
       userId,
-      { isVerified: true },
-      { new: true }
+      {
+        isVerified: true,
+        isLoggedIn: true,
+      },
+      { new: true },
     );
 
     await Otps.deleteMany({ user: userId });
@@ -115,10 +119,7 @@ router.post("/signup", async (req, res) => {
       isVerified: false,
     });
 
-    const otpSent = await sendOtp(
-      user.id,
-      user.email
-    );
+    const otpSent = await sendOtp(user.id, user.email);
 
     if (!otpSent) {
       return res.status(500).json({
@@ -134,7 +135,7 @@ router.post("/signup", async (req, res) => {
         },
       },
       JWT_SECRET,
-      { expiresIn: "10m" }
+      { expiresIn: "10m" },
     );
 
     return res.json({
@@ -152,7 +153,8 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.post( "/signin",
+router.post(
+  "/signin",
   [
     body("username", "Enter a valid username").exists(),
     body("password", "Password cannot be empty").exists(),
@@ -179,10 +181,7 @@ router.post( "/signin",
         });
       }
 
-      const comparePass = await bcrypt.compare(
-        password,
-        user.password
-      );
+      const comparePass = await bcrypt.compare(password, user.password);
 
       if (!comparePass) {
         return res.status(400).json({
@@ -191,39 +190,49 @@ router.post( "/signin",
         });
       }
 
-      if (!user.isVerified) {
-        await sendOtp(user.id, user.email);
+      await sendOtp(user.id, user.email);
 
-        const tempToken = jwt.sign(
-          {
-            user: {
-              id: user.id,
-            },
+      const tempToken = jwt.sign(
+        {
+          user: {
+            id: user.id,
           },
-          JWT_SECRET,
-          { expiresIn: "10m" }
-        );
-
-        return res.json({
-          success: true,
-          isVerified: false,
-          message: "OTP sent successfully",
-          tempToken,
-        });
-      }
-
-      const token = {
-        user: {
-          id: user.id,
         },
-      };
-
-      const authToken = jwt.sign(token, JWT_SECRET, { expiresIn: "10d", });
+        JWT_SECRET,
+        { expiresIn: "10m" },
+      );
 
       return res.json({
         success: true,
-        authToken,
-        isVerified: true,
+        message: "OTP sent successfully",
+        tempToken,
+      });
+    } catch (error) {
+      console.log(error);
+
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+      });
+    }
+  },
+);
+
+router.post(
+  "/logout",
+  verifyToken,
+  async (req, res) => {
+    try {
+      await User.findByIdAndUpdate(
+        req.user.id,
+        {
+          isLoggedIn: false,
+        }
+      );
+
+      return res.json({
+        success: true,
+        message: "Logged out successfully",
       });
     } catch (error) {
       console.log(error);
