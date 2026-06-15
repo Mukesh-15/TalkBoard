@@ -11,11 +11,8 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   const [participants, setParticipants] = useState([]);
-
   const [roomId, setRoomId] = useState(null);
-
   const [roomName, setRoomName] = useState("");
-
   const { user } = useContext(AuthContext);
 
   const navigate = useNavigate();
@@ -67,10 +64,7 @@ export const SocketProvider = ({ children }) => {
     };
   }, [user]);
 
-  // ======================
   // ROOM METHODS
-  // ======================
-
   const createRoom = (roomName) => {
     socket?.emit("create-room", { roomName });
   };
@@ -92,10 +86,7 @@ export const SocketProvider = ({ children }) => {
     navigate("/");
   };
 
-  // ======================
   // EDITOR
-  // ======================
-
   const sendTextChange = (content) => {
     socket?.emit("text-change", {
       roomId,

@@ -176,7 +176,7 @@ export default function Home() {
         <div>
           <h1 className="text-[30px] font-extrabold text-gray-900 leading-tight">
             {timeGreet},{" "}
-            <span className="text-orange-500">{user?.username}</span> 👋
+            <span className="text-orange-500">{user?.username}</span> 
           </h1>
           <p className="text-[14px] text-gray-400 mt-1">
             Ready to collaborate? Let's go.
