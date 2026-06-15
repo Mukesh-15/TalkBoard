@@ -9,7 +9,6 @@ const auth = require("./routes/auth");
 const connectToMongo = require("./db/db");
 
 const verifySocket = require("./middleware/verifySocket");
-
 const socketHandler = require("./sockets/socketHandler");
 
 const app = express();
