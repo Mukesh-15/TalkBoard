@@ -1,23 +1,52 @@
-require('dotenv').config();
-const express = require('express');
+require("dotenv").config();
+
+const express = require("express");
+const http = require("http");
+const cors = require("cors");
+const { Server } = require("socket.io");
+
+const auth = require("./routes/auth");
+const connectToMongo = require("./db/db");
+
+const verifySocket = require("./middleware/verifySocket");
+
+const socketHandler = require("./sockets/socketHandler");
+
 const app = express();
-const auth = require('./routes/auth');
-const cors = require('cors');
-const connectToMongo = require('./db/db');
 
 connectToMongo();
+
 app.use(express.json());
-app.use(cors());
 
-app.use('/auth', auth);
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
+const server = http.createServer(app);
 
-app.get('/', (req, res) => {
-    console.log("working..");
-    res.send("working bruh");
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
 
+io.use(verifySocket);
 
-app.listen(5000, () => {
-    console.log("Server runnig..");
+socketHandler(io);
+
+app.use("/auth", auth);
+
+app.get("/", (req, res) => {
+  res.send("Server working");
+});
+
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

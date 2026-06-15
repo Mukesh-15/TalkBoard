@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { SocketContext } from "../context/SocketContext";
 
 function Toast({ message }) {
   return (
@@ -19,13 +20,16 @@ function Toast({ message }) {
 
 function JoinCard({ onToast }) {
   const [code, setCode] = useState("");
+  const { joinRoom } = useContext(SocketContext);
 
   const handle = () => {
     if (!code.trim()) {
-      onToast("Please enter a room code");
+      onToast("Please enter room code");
       return;
     }
-    onToast(`Joining room ${code.trim().toUpperCase()}...`);
+
+    joinRoom(code.trim().toUpperCase());
+
     setCode("");
   };
 
@@ -81,14 +85,16 @@ function JoinCard({ onToast }) {
 
 function CreateCard({ onToast }) {
   const [name, setName] = useState("");
+  const { createRoom } = useContext(SocketContext);
 
   const handle = () => {
     if (!name.trim()) {
-      onToast("Please enter a room name");
+      onToast("Please enter room name");
       return;
     }
-    const code = "SAL-" + Math.floor(1000 + Math.random() * 9000);
-    onToast(`Room created! Code: ${code}`);
+
+    createRoom(name);
+
     setName("");
   };
 
@@ -158,7 +164,7 @@ export default function Home() {
   const handleLogout = async () => {
     showToast("Logged out successfully");
     logout();
-  }
+  };
 
   const hour = new Date().getHours();
   const timeGreet =
@@ -169,29 +175,41 @@ export default function Home() {
       <div className="flex items-start justify-between mb-8">
         <div>
           <h1 className="text-[30px] font-extrabold text-gray-900 leading-tight">
-            {timeGreet}, <span className="text-orange-500">{user?.username}</span> 👋
+            {timeGreet},{" "}
+            <span className="text-orange-500">{user?.username}</span> 👋
           </h1>
-          <p className="text-[14px] text-gray-400 mt-1">Ready to collaborate? Let's go.</p>
+          <p className="text-[14px] text-gray-400 mt-1">
+            Ready to collaborate? Let's go.
+          </p>
         </div>
         <button
           onClick={handleLogout}
           className="flex items-center gap-2 mt-1 px-4 py-2.5 rounded-2xl bg-white text-gray-500 text-[13.5px] font-semibold cursor-pointer transition-all active:scale-95 hover:text-orange-500"
           style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.07)" }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
           Logout
         </button>
       </div>
- 
+
       <div className="flex flex-col gap-4 max-w-sm mx-auto">
         <JoinCard onToast={showToast} />
         <CreateCard onToast={showToast} />
       </div>
- 
+
       <Toast message={toast} />
     </div>
   );

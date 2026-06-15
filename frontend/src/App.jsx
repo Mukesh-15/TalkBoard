@@ -9,6 +9,7 @@ import { AuthContext } from "./context/AuthContext.jsx";
 import { Routes, Route } from "react-router-dom";
 
 import "./App.css";
+import RoomPage from "./components/RoomPage.jsx";
 
 function App() {
   const { fetchUser } = useContext(AuthContext);
@@ -24,6 +25,7 @@ function App() {
       <Route path="/auth" element={<TalkBoardAuth />} />
 
       <Route path="/verify-otp" element={<OtpVerification />} />
+      <Route path="/room/:roomId" element={<RoomPage />} />
     </Routes>
   );
 }
