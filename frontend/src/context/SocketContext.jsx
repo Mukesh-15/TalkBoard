@@ -8,6 +8,7 @@ import { AuthContext } from "./AuthContext";
 export const SocketContext = createContext();
 
 export const SocketProvider = ({ children }) => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [socket, setSocket] = useState(null);
 
   const [participants, setParticipants] = useState([]);
@@ -22,7 +23,7 @@ export const SocketProvider = ({ children }) => {
 
     if (!token || !user) return;
 
-    const newSocket = io("http://localhost:5000", {
+    const newSocket = io(API_URL, {
       auth: {
         token,
       },
