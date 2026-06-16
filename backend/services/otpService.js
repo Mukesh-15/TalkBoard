@@ -15,8 +15,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-await transporter.verify();
-console.log("SMTP ready");
+// await transporter.verify();
+// console.log("SMTP ready");
 
 const sendOtp = async (userId, email) => {
   try {
