@@ -1,5 +1,6 @@
 const roomSocket = require("./roomSocket");
 const editorSocket = require("./editorSocket");
+const webrtcSocket = require("./webrtcSocket");
 
 const socketHandler = (io) => {
   io.on("connection", (socket) => {
@@ -7,6 +8,7 @@ const socketHandler = (io) => {
 
     roomSocket(io, socket);
     editorSocket(io, socket);
+    webrtcSocket(io, socket);
   });
 };
 

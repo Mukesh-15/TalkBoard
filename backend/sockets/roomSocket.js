@@ -29,9 +29,7 @@ const roomSocket = (io, socket) => {
   });
 
   socket.on("join-room", async ({ roomId }) => {
-    const room = await Room.findOne({
-      roomId,
-    });
+    const room = await Room.findOne({ roomId });
 
     if (!room) {
       return socket.emit("error", {
@@ -41,21 +39,31 @@ const roomSocket = (io, socket) => {
 
     socket.join(roomId);
 
+    if (!activeRooms[roomId]) {
+      activeRooms[roomId] = [];
+    }
+
+    const alreadyExists = activeRooms[roomId].some(
+      (user) => user.userId === socket.user.id,
+    );
+
+    if (!alreadyExists) {
+      activeRooms[roomId].push({
+        userId: socket.user.id,
+        username: socket.user.username,
+      });
+    }
+
     socket.emit("room-joined", {
       roomId,
       roomName: room.roomName,
     });
 
-    if (!activeRooms[roomId]) {
-      activeRooms[roomId] = [];
-    }
-
-    activeRooms[roomId].push({
-      userId: socket.user.id,
-      username: socket.user.username,
-    });
-
     io.to(roomId).emit("participants", activeRooms[roomId]);
+
+    if (activeRooms[roomId].length === 2) {
+      io.to(roomId).emit("start-call");
+    }
   });
 
   socket.on("leave-room", ({ roomId }) => {

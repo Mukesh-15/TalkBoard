@@ -13,7 +13,7 @@ function Toast({ message }) {
         ${message ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}
       `}
     >
-      {message}
+      {message} 
     </div>
   );
 }
@@ -29,8 +29,6 @@ function JoinCard({ onToast }) {
     }
 
     joinRoom(code.trim().toUpperCase());
-
-    setCode("");
   };
 
   return (

@@ -5,13 +5,16 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { SocketProvider } from "./context/SocketContext.jsx";
+import { WebRTCProvider } from "./context/WebRTCContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <SocketProvider>
-          <App />
+          <WebRTCProvider>
+            <App />
+          </WebRTCProvider>
         </SocketProvider>
       </AuthProvider>
     </BrowserRouter>
