@@ -1,6 +1,9 @@
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const Otps = require("../models/Otps");
+import dns from "dns";
+
+dns.setDefaultResultOrder("ipv4first");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
