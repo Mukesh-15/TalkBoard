@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const Otps = require("../models/Otps");
-import dns from "dns";
+const dns =  require("dns");
 
 dns.setDefaultResultOrder("ipv4first");
 
