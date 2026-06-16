@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import TextEditor from "./TextEditor";
-import VideoPanel from "./VideoPanel";
+import VideoPanel from "./Videopanel";
 import { SocketContext } from "../context/SocketContext";
 import { AuthContext } from "../context/AuthContext";
 import { WebRTCContext } from "../context/WebRTCContext";
