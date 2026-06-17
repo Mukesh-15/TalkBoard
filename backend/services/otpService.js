@@ -1,9 +1,6 @@
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const Otps = require("../models/Otps");
-const dns =  require("dns");
-
-dns.setDefaultResultOrder("ipv4first");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -15,8 +12,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// await transporter.verify();
-console.log("SMTP ready");
 
 const sendOtp = async (userId, email) => {
   try {
@@ -53,9 +48,6 @@ const sendOtp = async (userId, email) => {
     return true;
     
   } catch (error) {
-    if(error.code = "EENVELOPE"){
-      console.log("not a valid mail id");
-    }
     console.log(error);
     return false;
   }

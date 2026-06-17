@@ -19,6 +19,8 @@
     "mailer": "^0.6.7",
     "mongoose": "^9.7.0",
     "nodemailer": "^8.0.11",
+    "resend": "^6.12.4",
+    "sib-api-v3-sdk": "^8.5.0",
     "socket.io": "^4.8.3"
   },
   "devDependencies": {
