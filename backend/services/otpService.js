@@ -73,7 +73,7 @@ const sendOtp = async (userId, email) => {
 
     await resend.emails.send({
       from: "talkBoard <onboarding@resend.dev>",
-      to: email,
+      to: "krishnadoodapaka@gmail.com",
       subject: "Your OTP Code",
       html: `
         <h2>Your OTP is: ${rawOtp}</h2>
