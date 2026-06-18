@@ -3,9 +3,10 @@ const nodemailer = require("nodemailer");
 const Otps = require("../models/Otps");
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp.gmail.com",  // explicit host instead of 'service: gmail'
   port: 587,
-  secure: false, // must be false for 587
+  family: 4,               // 👈 force IPv4
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
