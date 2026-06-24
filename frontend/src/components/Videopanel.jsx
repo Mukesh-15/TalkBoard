@@ -47,13 +47,6 @@ export default function VideoPanel({ partnerName = "Partner", onExit }) {
 
           <p className="text-[12px] text-gray-400 mt-0.5">Live Room</p>
         </div>
-
-        <button
-          onClick={onExit}
-          className="flex items-center gap-1.5 h-9 px-4 rounded-[11px] bg-orange-50 text-orange-500 text-[13px] font-bold cursor-pointer hover:bg-orange-100 transition-colors"
-        >
-          Exit room
-        </button>
       </div>
 
       {/* Main Area */}
