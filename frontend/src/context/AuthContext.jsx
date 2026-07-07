@@ -100,6 +100,9 @@ export const AuthProvider = ({ children }) => {
 
       if (json.success) {
         localStorage.setItem("token", json.authToken);
+      }else{
+        setMsg(json.message);
+        setTimeout(() => setMsg(null), 2000);
       }
 
       return json;
