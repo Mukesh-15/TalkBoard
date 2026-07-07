@@ -76,7 +76,6 @@ export const AuthProvider = ({ children }) => {
 
       return json;
     } catch (err) {
-      setMsg(err);
       console.error("Login error:", err);
       // toast.error("Something went wrong. Please try again.");
     }
