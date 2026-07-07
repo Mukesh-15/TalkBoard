@@ -1,9 +1,12 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import {ToastContext} from "./ToastContext";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+
+  const {setMsg} = useContext(ToastContext);
   const API_URL = import.meta.env.VITE_API_URL;
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,6 +32,9 @@ export const AuthProvider = ({ children }) => {
 
       if (json.success) {
         localStorage.setItem("token", json.tempToken);
+      }else{
+        setMsg(json.message);
+        setTimeout(() => setMsg(null), 2000);
       }
 
       return json;
@@ -63,10 +69,14 @@ export const AuthProvider = ({ children }) => {
         if (json.authToken) {
           localStorage.setItem("token", json.authToken);
         }
+      }else{
+        setMsg(json.message);
+        setTimeout(() => setMsg(null), 2000);
       }
 
       return json;
     } catch (err) {
+      setMsg(err);
       console.error("Login error:", err);
       // toast.error("Something went wrong. Please try again.");
     }
@@ -154,44 +164,39 @@ export const AuthProvider = ({ children }) => {
   // };
 
   const fetchUser = async () => {
-  try {
-    const token =
-      localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    if (!token) {
-      navigate("/auth");
-      return;
-    }
+      if (!token) {
+        navigate("/auth");
+        return;
+      }
 
-    const response = await fetch(
-      `${API_URL}/auth/me`,
-      {
+      const response = await fetch(`${API_URL}/auth/me`, {
         headers: {
           authToken: token,
         },
+      });
+
+      const json = await response.json();
+
+      if (json.success) {
+        setUser(json.user);
+      } else {
+        localStorage.removeItem("token");
+        navigate("/auth");
       }
-    );
-
-    const json =
-      await response.json();
-
-    if (json.success) {
-      setUser(json.user);
-    } else {
-      localStorage.removeItem("token");
+    } catch (error) {
+      console.log(error);
       navigate("/auth");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.log(error);
-    navigate("/auth");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <AuthContext.Provider
-      value={{ signup, login, verifyOtp, logout, fetchUser, user}}
+      value={{ signup, login, verifyOtp, logout, fetchUser, user }}
     >
       {children}
     </AuthContext.Provider>
