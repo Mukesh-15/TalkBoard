@@ -150,9 +150,11 @@ function CreateCard({ onToast }) {
 export default function Home() {
   const [toast, setToast] = useState("");
   const navigate = useNavigate();
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, fetchUser, loading } = useContext(AuthContext);
 
-  console.log(user);
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   const showToast = (msg) => {
     setToast(msg);
@@ -167,6 +169,14 @@ export default function Home() {
   const hour = new Date().getHours();
   const timeGreet =
     hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f0f0f7] flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full border-4 border-orange-200 border-t-orange-500 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f0f0f7] px-7 py-8 font-sans">
