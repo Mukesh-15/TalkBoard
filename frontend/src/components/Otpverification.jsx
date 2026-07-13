@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useContext } from "react";
 import {AuthContext} from '../context/AuthContext';
 import { useNavigate } from "react-router-dom";
+import { useLoader } from "../context/LoaderContext";
 
 export default function OtpVerification({ length = 6 }) {
   const [values, setValues] = useState(Array(length).fill(""));
@@ -9,7 +10,9 @@ export default function OtpVerification({ length = 6 }) {
   const [resendTimer, setResendTimer] = useState(0);
   const inputs = useRef([]);
   const {verifyOtp} = useContext(AuthContext);
+  const { withLoader, isActionLoading } = useLoader();
   const navigate = useNavigate();
+  const otpLoading = isActionLoading("otp");
 
   useEffect(() => {
     inputs.current[0]?.focus();
@@ -54,26 +57,26 @@ export default function OtpVerification({ length = 6 }) {
     if (code.length < length) {
       const empty = values.findIndex(v => !v);
       inputs.current[empty]?.focus();
-
       setToast("Please enter all 6 digits");
       return;
     }
 
-    const response = await verifyOtp(code);
+    await withLoader("otp", async () => {
+      const response = await verifyOtp(code);
 
-    if(response.success){
-      setVerified(true);
-      navigate("/");
-    }else{
-      toast("Wrong OTP");
-    }
-    // onVerify?.(code);
+      if(response.success){
+        setVerified(true);
+        navigate("/");
+      }else{
+        setToast("Wrong OTP. Please try again.");
+      }
 
-    setTimeout(() => {
-      setVerified(false);
-      setValues(Array(length).fill(""));
-      inputs.current[0]?.focus();
-    }, 2000);
+      setTimeout(() => {
+        setVerified(false);
+        setValues(Array(length).fill(""));
+        inputs.current[0]?.focus();
+      }, 2000);
+    });
   };
 
   const handleResend = (e) => {
@@ -116,12 +119,20 @@ export default function OtpVerification({ length = 6 }) {
 
         <button
           onClick={handleConfirm}
+          disabled={otpLoading}
           className={`
             w-full h-12 rounded-full text-white font-semibold text-sm transition-all
+            flex items-center justify-center gap-2
             ${verified ? "bg-emerald-500" : "bg-orange-500 hover:bg-orange-600 active:scale-[0.98]"}
+            disabled:opacity-70 disabled:cursor-not-allowed
           `}
         >
-          {verified ? "✓ Verified!" : "Confirm"}
+          {otpLoading ? (
+            <>
+              <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+              Verifying…
+            </>
+          ) : verified ? "✓ Verified!" : "Confirm"}
         </button>
 
         <p className="text-center text-sm text-gray-400 mt-4">

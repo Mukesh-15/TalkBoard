@@ -1,23 +1,27 @@
-import { useState, useEffect, useContext} from "react";
+import { useState, useContext} from "react";
 import {AuthContext} from '../context/AuthContext';
 import IconField from './IconField';
 import { useNavigate } from "react-router-dom";
+import { useLoader } from "../context/LoaderContext";
 
 export default function LoginPanel() {
 
   const {login} = useContext(AuthContext);
+  const { withLoader, isActionLoading } = useLoader();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const loading = isActionLoading("login");
 
   const handleLogin = async () => {
-    const response = await login(username, password);
-
-    if(response.success){
-      navigate("/verify-otp");
-    }else{
-      console.log(response);
-    }
+    await withLoader("login", async () => {
+      const response = await login(username, password);
+      if(response.success){
+        navigate("/verify-otp");
+      }else{
+        console.log(response);
+      }
+    });
   }
 
   return (
@@ -36,8 +40,17 @@ export default function LoginPanel() {
         <a href="#" className="text-xs text-gray-400 hover:text-orange-500 transition-colors">Forgot password?</a>
       </div>
 
-      <button className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full text-sm transition-colors mb-4 cursor-pointer" onClick={handleLogin}>
-        Sign in
+      <button
+        className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full text-sm transition-colors mb-4 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+        onClick={handleLogin}
+        disabled={loading}
+      >
+        {loading ? (
+          <>
+            <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+            Signing in…
+          </>
+        ) : "Sign in"}
       </button>
 
       <div className="flex items-center gap-3 mb-4">
@@ -52,4 +65,4 @@ export default function LoginPanel() {
       </button>
     </div>
   );
-}
+}

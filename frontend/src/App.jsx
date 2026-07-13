@@ -5,6 +5,7 @@ import heroImg from "./assets/hero.png";
 import TalkBoardAuth from "./components/TalkBoardAuth";
 import Home from "./components/Home";
 import Toast from "./components/Toast.jsx";
+import Loader from "./components/Loader.jsx";
 import OtpVerification from "./components/Otpverification.jsx";
 import { AuthContext } from "./context/AuthContext.jsx";
 import { Routes, Route } from "react-router-dom";
@@ -31,8 +32,10 @@ function App() {
       </Routes>
 
       <Toast/>
+      <Loader />
     </>
   );
 }
 
 export default App;
+

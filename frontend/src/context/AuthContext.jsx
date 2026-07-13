@@ -1,15 +1,16 @@
 import { createContext, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import {ToastContext} from "./ToastContext";
+import { ToastContext } from "./ToastContext";
+import { useLoader } from "./LoaderContext";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
 
-  const {setMsg} = useContext(ToastContext);
+  const { setMsg } = useContext(ToastContext);
+  const { showLoader, hideLoader } = useLoader();
   const API_URL = import.meta.env.VITE_API_URL;
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const signup = async (username, email, password, confirmPassword) => {
@@ -167,6 +168,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
+      showLoader();
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -192,13 +194,13 @@ export const AuthProvider = ({ children }) => {
       console.log(error);
       navigate("/auth");
     } finally {
-      setLoading(false);
+      hideLoader();
     }
   };
 
   return (
     <AuthContext.Provider
-      value={{ signup, login, verifyOtp, logout, fetchUser, user, loading }}
+      value={{ signup, login, verifyOtp, logout, fetchUser, user }}
     >
       {children}
     </AuthContext.Provider>

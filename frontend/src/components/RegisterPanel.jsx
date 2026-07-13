@@ -1,25 +1,28 @@
-import { useState, useEffect, useContext} from "react";
+import { useState, useContext} from "react";
 import {AuthContext} from '../context/AuthContext';
 import IconField from './IconField';
 import { useNavigate } from "react-router-dom";
+import { useLoader } from "../context/LoaderContext";
 
 export default function RegisterPanel() {
   const {signup} = useContext(AuthContext);
+  const { withLoader, isActionLoading } = useLoader();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
+  const loading = isActionLoading("signup");
 
-
-  const handleSignup = async () =>{
-    const response = await signup(username, email, password, confirmPassword);
-
-    if(response.success){
-      navigate("/verify-otp");
-    }else{
-      console.log(response);
-    }
+  const handleSignup = async () => {
+    await withLoader("signup", async () => {
+      const response = await signup(username, email, password, confirmPassword);
+      if(response.success){
+        navigate("/verify-otp");
+      }else{
+        console.log(response);
+      }
+    });
   }
 
   return (
@@ -32,8 +35,17 @@ export default function RegisterPanel() {
       <IconField type="password" ionicon="lock-closed-outline"      placeholder="Create password"  id="r-pw1"   value={password} setValue={setPassword}/>
       <IconField type="password" ionicon="shield-checkmark-outline" placeholder="Confirm password" id="r-pw2"   value={confirmPassword} setValue={setConfirmPassword}/>
 
-      <button className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full text-sm transition-colors mt-1 mb-4 cursor-pointer" onClick={handleSignup}>
-        Create account
+      <button
+        className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full text-sm transition-colors mt-1 mb-4 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+        onClick={handleSignup}
+        disabled={loading}
+      >
+        {loading ? (
+          <>
+            <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+            Creating…
+          </>
+        ) : "Create account"}
       </button>
 
       <div className="flex items-center gap-3 mb-4">
@@ -48,4 +60,4 @@ export default function RegisterPanel() {
       </button>
     </div>
   );
-}
+}
